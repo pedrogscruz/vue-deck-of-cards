@@ -5,6 +5,7 @@
 			:error="showError"
 			:text="card.text"
 			v-on:validate="$emit('validate', $event)"
+			v-on:remove="$listeners.remove && $emit('remove', $event)"
 		/>
 		<center>
 			<input

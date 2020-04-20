@@ -8,6 +8,7 @@
 					v-bind:card="card"
 					v-on:input="card.text = $event; card.repeated = !validateCardIsNotRepeated(card.text, index);"
 					v-on:validate="card.valid = $event"
+					v-on:remove="removeCard(index)"
 				/>
 			</div>
 		</div>
@@ -115,6 +116,10 @@ export default {
 			newCard.value = '';
 		};
 
+		const removeCard = (index) => {
+			cards.value.splice(index, 1);
+		};
+
 		const onSubmit = () => {
 			const myPile = [{text: rotationCard.value}, ...cards.value].map(({ text }) => text.slice(-2)).join(',').toUpperCase();
 			fetch(`https://deckofcardsapi.com/api/deck/new/draw/?count=52`)
@@ -131,6 +136,7 @@ export default {
 			newCard,
 			rotationCard,
 			addNewCard,
+			removeCard,
 			newCardIsValid,
 			validateCardIsNotRepeated,
 			isValid,

@@ -1,5 +1,5 @@
 <template>
-	<div class="card" :class="error && 'error'">
+	<div class="card" :class="!!error && 'error'">
 		<span class="suit left">
 			{{ formattedCard }}
 		</span>
@@ -12,11 +12,18 @@
 		>
 			{{ error }}
 		</span>
+		<VCloseButton
+			v-if="$listeners.remove"
+			type="button"
+			class="close-button"
+			v-on:click="$emit('remove', $event)"
+		/>
 	</div>
 </template>
 
 <script>
 import { computed, watchEffect } from '@vue/composition-api'
+import VCloseButton from '../components/VCloseButton'
 
 export const values = ['2','A','K','Q','J','10','9','8','7','6','5','4','3'];
 export const suits = {H: '❤️', D: '♦️', C: '♣️', S: '♠️'};
@@ -42,6 +49,9 @@ export default {
 			type: [String, Boolean],
 			required: false
 		}
+	},
+	components: {
+		VCloseButton
 	},
 	setup(props, { emit }) {
 		const { text } = props;
@@ -95,5 +105,15 @@ export default {
 	.right {
 		bottom: 6px;
 		right: 6px;
+	}
+	.close-button {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		opacity: 0;
+		transition: opacity 0.1s ease-in;
+	}
+	.card:hover > .close-button {
+		opacity: 1;
 	}
 </style>
