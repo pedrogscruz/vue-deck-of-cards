@@ -1,16 +1,18 @@
 <template>
-	
-	<span class="container">
-		<span>
+	<div class="card" :class="error && 'error'">
+		<span class="suit left">
 			{{ formattedCard }}
 		</span>
-	</span>
-	<input
-		type="text"
-		maxlength="2"
-		v-bind:value="card.text"
-		v-on:input="$emit('input', $event.target.value)"
-	/>
+		<span class="suit rotate right">
+			{{ formattedCard }}
+		</span>
+		<span
+			class="error-text"
+			v-if="!!error"
+		>
+			{{ error }}
+		</span>
+	</div>
 </template>
 
 <script>
@@ -19,27 +21,33 @@ import { computed, watchEffect } from '@vue/composition-api'
 const values = ['2','A','K','Q','J','10','9','8','7','6','5','4','3'];
 const suits = {H: '❤️', D: '♦️', C: '♣️', S: '♠️'};
 
-export const formatValue = (value) => {
-	const text = value.toUpperCase();
-	if (text.length !== 2) return '';
-	if (!values.includes(text[0])) return '';
-	const suit = suits[text[1]];
+export const formatValue = (string) => {
+	if (![2, 3].includes(string.length)) return '';
+	let value = Array.from(string.toUpperCase());
+	let suit = value.splice(-1);
+	value = value.join('');
+	if (!values.includes(value)) return '';
+	suit = suits[suit[0]];
 	if (!suit) return '';
-	return text[0]+suit;
+	return value+suit;
 };
 
 export default {
 	props: {
-		card: {
-			type: Object,
+		text: {
+			type: String,
 			required: true
+		},
+		error: {
+			type: [String, Boolean],
+			required: false
 		}
 	},
 	setup(props, { emit }) {
-		const { card } = props;
-		const formattedCard = computed(() => formatValue(card.text));
+		const { text } = props;
+		const formattedCard = computed(() => formatValue(text) || '?');
 
-		const isValid = computed(() => formattedCard.value !== '');
+		const isValid = computed(() => formattedCard.value !== '?');
 
 		watchEffect(() => {
 			emit('validate', isValid.value);
@@ -53,7 +61,39 @@ export default {
 </script>
 
 <style scoped>
-	.container {
-		margin: 0;
-	} 
+	.card {
+		display: flex;
+		align-items: center;
+		background-color: #FFFFFF;
+		border-radius: 4px;
+		padding: 6px;
+		height: 100px;
+		width: 60px;
+		position: relative;
+		border: 2px dashed transparent;
+	}
+	.error {
+		border: 2px dashed red;
+	}
+	.error-text {
+		font-size: 12px;
+		color: red
+	}
+	.rotate {
+		display: block;
+		transform: rotate(180deg);
+	}
+	.suit {
+		font-weight: bold;
+		letter-spacing: 3px;
+		position: absolute;
+	}
+	.left {
+		top: 6px;
+		left: 6px;
+	}
+	.right {
+		bottom: 6px;
+		right: 6px;
+	}
 </style>
