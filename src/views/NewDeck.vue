@@ -26,6 +26,7 @@
 				<VCard
 					:key="rotationCard"
 					:text="rotationCard"
+					:error="rotationCardError"
 					v-on:validate="rotationCardIsValid = $event"
 				/>
 			</div>
@@ -75,7 +76,7 @@ export default {
 		VInput,
 		VLabel
 	},
-	setup() {
+	setup(props, vm) {
 		const cards = ref([]);
 		const newCard = ref('');
 		const rotationCard = ref('');
@@ -85,14 +86,18 @@ export default {
 			!cards.value.some(({ text, repeated }, ndx) => newText === text && !repeated && index !== ndx)
 		);
 
-		const validateNoCardIsNotRepeated = (newText) => (
+		const validateThisCardIsNotRepeated = (newText) => (
 			!cards.value.some(({ text }) => newText === text)
 		);
+
+		const rotationCardError = computed(() => (
+			!rotationCardIsValid.value && 'Unknown Card'
+		));
 
 		const isValid = computed(() => {
 			const textsSet = new Set();
 			return (
-				cards.value.length>0 && rotationCardIsValid.value && !cards.value.some(({ valid, text }) => {
+				cards.value.length>0 && !rotationCardError.value && !cards.value.some(({ valid, text }) => {
 					const repeat = textsSet.has(text);
 					textsSet.add(text);
 					return !valid || repeat;
@@ -101,17 +106,24 @@ export default {
 		});
 
 		const newCardIsValid = computed(() => (
-			formatValue(newCard.value) !== '' && validateNoCardIsNotRepeated(newCard.value)
+			formatValue(newCard.value) !== '' && validateThisCardIsNotRepeated(newCard.value)
 		));
 
 		const addNewCard = () => {
-			if (!newCardIsValid.value) return;
+			if (!newCardIsValid.value || cards.value.length === 10) return;
 			cards.value.push({ text: newCard.value, valid: true, repeated: false });
 			newCard.value = '';
 		};
 
 		const onSubmit = () => {
-			console.log('submit');
+			const myPile = [{text: rotationCard.value}, ...cards.value].map(({ text }) => text.slice(-2)).join(',').toUpperCase();
+			fetch(`https://deckofcardsapi.com/api/deck/new/draw/?count=52`)
+				.then(response => response.json())
+				.then(async deck => {
+					const pileUri = `https://deckofcardsapi.com/api/deck/${deck.deck_id}/pile/`;
+					await fetch(pileUri+`my_pile/add/?cards=${myPile}`);
+					vm.root.$options.router.push({ path: "/deck/" + deck.deck_id });
+				});
 		};
 
 		return {
@@ -123,6 +135,7 @@ export default {
 			validateCardIsNotRepeated,
 			isValid,
 			rotationCardIsValid,
+			rotationCardError,
 			onSubmit
 		};
 	}
@@ -142,7 +155,7 @@ export default {
 		border-radius: 150px;
 		position: relative;
 		padding: 20px;
-		height: 376px;
+		height: 386px;
 		overflow: auto;
 	}
 	.deck:before {

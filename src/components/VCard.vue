@@ -18,8 +18,8 @@
 <script>
 import { computed, watchEffect } from '@vue/composition-api'
 
-const values = ['2','A','K','Q','J','10','9','8','7','6','5','4','3'];
-const suits = {H: '❤️', D: '♦️', C: '♣️', S: '♠️'};
+export const values = ['2','A','K','Q','J','10','9','8','7','6','5','4','3'];
+export const suits = {H: '❤️', D: '♦️', C: '♣️', S: '♠️'};
 
 export const formatValue = (string) => {
 	if (![2, 3].includes(string.length)) return '';

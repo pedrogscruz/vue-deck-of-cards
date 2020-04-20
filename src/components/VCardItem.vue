@@ -37,7 +37,7 @@ export default {
 		const { card } = props;
 
 		const showError = computed(() => (
-			!card.valid ? 'Unknown\nCard' : card.repeated && 'Repeated\nCard'
+			!card.valid ? 'Unknown Card' : card.repeated && 'Repeated Card'
 		));
 
 		return {
