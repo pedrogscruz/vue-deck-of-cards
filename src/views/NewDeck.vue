@@ -3,6 +3,7 @@
 		<div class="deck">
 			<div class="scroll">
 				<VCardItem
+					:id="'card.'+index"
 					v-for="(card, index) in cards"
 					:key="index"
 					v-bind:card="card"
@@ -17,7 +18,8 @@
 				<div :style="{ display: 'flex'}">
 					<VLabel>Rotation Card: </VLabel>
 					<VInput
-						class="add-input"
+						id="rotation-card-input"
+						class="input"
 						type="text"
 						maxlength="3"
 						v-model="rotationCard"
@@ -34,13 +36,15 @@
 			<div :style="{marginLeft: 'auto'}">
 				<VLabel>Add Card: </VLabel>
 				<VInput
-					class="add-input"
+					id="add-card-input"
+					class="input"
 					type="text"
 					maxlength="3"
 					v-model="newCard"
 					v-on:keydown.enter.prevent="addNewCard"
 				/>
 				<VButton
+					id="add-card-button"
 					type="button"
 					@click="addNewCard"
 					:disabled="!newCardIsValid"
@@ -186,7 +190,7 @@ export default {
     bottom: 0;
     overflow: scroll;
 	}
-	.add-input {
+	.input {
 		width: 70px;
 		margin-right: 10px;
 	}

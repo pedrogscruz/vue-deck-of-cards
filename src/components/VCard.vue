@@ -24,9 +24,7 @@
 <script>
 import { computed, watchEffect } from '@vue/composition-api'
 import VCloseButton from '../components/VCloseButton'
-
-export const values = ['2','A','K','Q','J','10','9','8','7','6','5','4','3'];
-export const suits = {H: '❤️', D: '♦️', C: '♣️', S: '♠️'};
+import { values, suits } from '../utils/card'
 
 export const formatValue = (string) => {
 	if (![2, 3].includes(string.length)) return '';

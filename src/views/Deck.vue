@@ -13,6 +13,9 @@
 			</span>
 		</center>
 		<div class="high-card">
+			<VLabel>Rotation Card: {{ rotationCard }}</VLabel>
+		</div>
+		<div class="high-card">
 			<VLabel>High Card: {{ pile[0] }}</VLabel>
 		</div>
 		<div>
@@ -36,7 +39,9 @@
 
 <script>
 import { onMounted, ref } from '@vue/composition-api'
-import VCard, { values, suits } from '../components/VCard.vue'
+
+import { values, suits } from '../utils/card'
+import VCard from '../components/VCard.vue'
 import VLabel from '../components/VLabel'
 
 const kCombinations = (set, k) => {
