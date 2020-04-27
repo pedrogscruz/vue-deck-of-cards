@@ -39,7 +39,6 @@ export default {
 	},
 	setup(props, vm) {
 		onMounted(() => {
-			console.log('onMounted');
 			vm.root.$store.commit('RESET_FORM');
 		});
 

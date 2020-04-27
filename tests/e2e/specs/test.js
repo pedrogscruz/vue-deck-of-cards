@@ -1,6 +1,7 @@
 // https://docs.cypress.io/api/introduction/api.html
 
-import { values, suits } from '../../../src/utils/card';
+const values = ['2', 'A', 'K', 'Q', 'J', '10', '9', '8', '7', '6', '5', '4', '3'];
+const suits = { H: '❤️', D: '♦️', C: '♣️', S: '♠️' };
 
 const COMMAND_DELAY = 500;
 
@@ -29,30 +30,58 @@ describe('Deck of Cards App', () => {
     cy.route({
       method: 'GET',
       url: 'https://deckofcardsapi.com/api/deck/new/draw/?count=52',
-      response: { json: () => ({ deck_id: 'my_id' }) }
-    }).as('getDeckId');
+      response: { deck_id: 'my_id' }
+    });
 
     cy.visit('/');
-    cy.get('#rotation-card-input').type(getValidCard());
+    const rotationCard = getValidCard();
+    cy.get('#rotation-card-input').type(rotationCard);
 
     let cards;
-    cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/deck/new');
-    });
 
     cy.get('#add-card-input').as('addCardInput');
     cy.get('#add-card-button').as('addCardButton');
 
     const cardsQtd = random(10) + 1;
     cards = new Set();
-    for (var i=0; i<cardsQtd; i++) {
+    var i=0;
+    do {
       const newCard = getValidCard();
       if (cards.has(newCard)) continue;
       cards.add(newCard);
       cy.get('@addCardInput').type(newCard);
       cy.get('@addCardButton').click();
-    }
+      i++;
+    } while (i<cardsQtd);
+
+    const formatedCards = [rotationCard, ...cards].map((text) => text.slice(-2))
+    cy.route({
+      method: 'GET',
+      url: 'https://deckofcardsapi.com/api/deck/my_id/pile/my_pile/add/?cards='+formatedCards.join(',').toUpperCase(),
+      response: { deck_id: 'my_id' }
+    }).as('createDeck');
+
+    cy.route({
+      method: 'GET',
+      url: 'https://deckofcardsapi.com/api/deck/my_id/pile/my_pile/list',
+      response: {
+        piles: {
+          my_pile: {
+            cards: formatedCards.map((text) => ({
+              code: text,
+              suit: text[1],
+              value: (text[0] === '0' ? '1' : '') + text[0]
+            }))
+          }
+        }
+      }
+    }).as('getDeck');
+
     cy.get('form').submit();
-    cy.wait('@getDeckId');
+    cy.wait('@getDeck');
+
+    cy.location().should((loc) => {
+      expect(loc.pathname).to.eq('/deck/my_id');
+    });
   })
 })
