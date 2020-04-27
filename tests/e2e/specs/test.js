@@ -52,7 +52,7 @@ describe('Deck of Cards App', () => {
       cy.get('@addCardInput').type(newCard);
       cy.get('@addCardButton').click();
     }
-    cy.wait('@getDeckId');
     cy.get('form').submit();
+    cy.wait('@getDeckId');
   })
 })

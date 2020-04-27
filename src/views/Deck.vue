@@ -44,7 +44,6 @@
 <script>
 import { onMounted, computed } from '@vue/composition-api'
 
-import { values, suits } from '../utils/card'
 import VCard from '../components/VCard.vue'
 import VLabel from '../components/VLabel'
 
@@ -55,7 +54,7 @@ export default {
 	},
 	setup(props, vm) {
 		const deckPile = computed(() => (
-			vm.root.$store.state.deck
+			vm.root.$store.getters.deck
 		));
 
 		onMounted(async () => {

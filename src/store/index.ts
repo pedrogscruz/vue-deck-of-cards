@@ -5,8 +5,8 @@ import { deck, getDeckResponse } from './types';
 
 const state = {
   cards: [] as string[],
-  rotationCard: '',
-  submitValid: false as boolean,
+  rotationCardText: '',
+  rotationCardValid: false as boolean,
   deck: true as boolean | deck
 };
 
@@ -38,6 +38,17 @@ const mutations: MutationTree<stateType> = {
   SET_DECK: async (state, pile = []) => {
     if (!pile) return state.deck = false;
     state.deck = getDeck(pile);
+  },
+  SET_ROTATION_CARD_TEXT: async (state, text: string) => {
+    state.rotationCardText = text;
+  },
+  SET_ROTATION_CARD_VALID: async (state, valid: boolean) => {
+    state.rotationCardValid = valid;
+  },
+  RESET_FORM: async (state) => {
+    state.cards.splice(0, state.cards.length);
+    state.rotationCardText = '';
+    state.rotationCardValid = false;
   }
 }
 
