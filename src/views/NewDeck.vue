@@ -124,15 +124,10 @@ export default {
 			cards.value.splice(index, 1);
 		};
 
-		const onSubmit = () => {
-			const myPile = [{text: rotationCard.value}, ...cards.value].map(({ text }) => text.slice(-2)).join(',').toUpperCase();
-			fetch(`https://deckofcardsapi.com/api/deck/new/draw/?count=52`)
-				.then(response => response.json())
-				.then(async deck => {
-					const pileUri = `https://deckofcardsapi.com/api/deck/${deck.deck_id}/pile/`;
-					await fetch(pileUri+`my_pile/add/?cards=${myPile}`);
-					vm.root.$options.router.push({ path: "/deck/" + deck.deck_id });
-				});
+		const onSubmit = async () => {
+			const myPile = [{text: rotationCard.value}, ...cards.value].map(({ text }) => text.slice(-2));
+			const deckId = await vm.root.$store.dispatch('CREATE_NEW_DECK', myPile);
+			vm.root.$options.router.push({ path: "/deck/" + deckId });
 		};
 
 		return {

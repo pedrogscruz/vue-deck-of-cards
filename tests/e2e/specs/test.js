@@ -25,6 +25,13 @@ const getValidCard = () => (
 
 describe('Deck of Cards App', () => {
   it('create cards deck', () => {
+    cy.server();
+    cy.route({
+      method: 'GET',
+      url: 'https://deckofcardsapi.com/api/deck/new/draw/?count=52',
+      response: { json: () => ({ deck_id: 'my_id' }) }
+    }).as('getDeckId');
+
     cy.visit('/');
     cy.get('#rotation-card-input').type(getValidCard());
 
@@ -45,6 +52,7 @@ describe('Deck of Cards App', () => {
       cy.get('@addCardInput').type(newCard);
       cy.get('@addCardButton').click();
     }
+    cy.wait('@getDeckId');
     cy.get('form').submit();
   })
 })
